@@ -39,7 +39,17 @@
 ```javascript
 import RNVideoCompress from 'react-native-video-compress';
 
-// TODO: What to do with the module?
-RNVideoCompress;
+try {
+  const compressUri = await RNVideoCompress.compress(uri, {
+    width: 720,
+    height: 1280,
+    bitrate: 500000
+  }).progress(value => {
+    console.log(value);
+  })
+  console.log(compressUri);
+} catch (error) {
+  console.log(error);
+}
 ```
   
