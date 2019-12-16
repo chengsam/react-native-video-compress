@@ -102,7 +102,7 @@ RCT_EXPORT_METHOD(compress:(NSString *)source options:(NSDictionary *)options re
     
     encoder.audioSettings = @{
       AVFormatIDKey: @(kAudioFormatMPEG4AAC),
-      AVNumberOfChannelsKey: @1,
+      AVNumberOfChannelsKey: @2,
       AVSampleRateKey: @44100,
       AVEncoderBitRateKey: @128000,
     };
