@@ -69,18 +69,26 @@ public class VideoCompressEncoder {
         String rotation = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_ROTATION);
       //  String framecount = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_FRAME_COUNT);
         long duration = Long.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION)) * 1000;
+        int bitrate = Integer.valueOf(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_BITRATE));
 
         long startTime = -1;
         long endTime = -1;
 
         int rotationValue = Integer.valueOf(rotation);
-        int originalWidth = Integer.valueOf(width);
-        int originalHeight = Integer.valueOf(height);
         boolean isPortrait = rotationValue == 90 || rotationValue == 270;
+        int originalWidth = Integer.valueOf(isPortrait ? height : width);
+        int originalHeight = Integer.valueOf(isPortrait ? width : height);
+
+        int desiredWidth = isPortrait ? nwidth : nheight;
+        int desiredHeight = isPortrait ? nheight : nwidth;
+        float widthRatio = (float) desiredWidth / originalWidth;
+        float heightRatio = (float) desiredHeight / originalHeight;
+        float bestRatio = Math.min(widthRatio, heightRatio);
+        float finalRatio = bestRatio < 1 ? bestRatio : 1;
 
         mBitRate = nbitrate;
-        mWidth = isPortrait ? nwidth : nheight;
-        mHeight = isPortrait ? nheight : nwidth;
+        mWidth = Math.round(originalWidth * finalRatio);
+        mHeight = Math.round(originalHeight * finalRatio);
 
 
        // NUM_FRAMES = Integer.getInteger(framecount);
@@ -134,7 +142,7 @@ public class VideoCompressEncoder {
             /**
              * mediacodec + surface + opengl
              * */
-            if (mWidth != originalWidth || mHeight != originalHeight) {
+            if (mWidth != originalWidth || mHeight != originalHeight || mBitRate != bitrate) {
 
                 int videoIndex = selectTrack(extractor, false);
 
